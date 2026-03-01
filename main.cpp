@@ -8,10 +8,12 @@
 
 using namespace std;
 
-
-
 double euclidean_distance(vector<double> &classes, vector<double> &input) {
-    return sqrt(pow(classes[0] - input[0], 2) + pow(classes[1] - input[1], 2));
+    double distance = 0;
+    for (int i = 0; i < classes.size(); i++) {
+        distance += pow(classes[i] - input[i], 2);
+    }
+    return sqrt(distance);
 }
 
 int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &class2, vector<double> input) {
@@ -21,12 +23,9 @@ int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &cla
     //go through each features and find the nearest neighbor given an input
     for (int i = 0; i < class1.size(); i++) {
         class1_nearest = min(euclidean_distance(class1[i], input), class1_nearest);
-        
     }
     for (int i = 0; i < class2.size(); i++) {
         class2_nearest = min(euclidean_distance(class2[i], input), class2_nearest);
-        
-
     }
 
     if (class1_nearest < class2_nearest) 
@@ -89,6 +88,16 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
         testing_class2.clear();
     }
     return (accuracies / k) * 100;
+}
+
+void forward_elimation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
+    vector<double> accuracies;
+    vector<vector<double>> nodes;
+
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+        }
+    }
 }
 
 int main() {
