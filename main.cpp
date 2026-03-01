@@ -11,7 +11,7 @@ using namespace std;
 
 
 double euclidean_distance(vector<double> &classes, vector<double> &input) {
-    return sqrt(pow(classes[0] - input[0], 2) + pow(classes[1] - input[1], 2) + pow(classes[2] - input[2], 2));
+    return sqrt(pow(classes[0] - input[0], 2) + pow(classes[1] - input[1], 2));
 }
 
 int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &class2, vector<double> input) {
@@ -28,8 +28,6 @@ int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &cla
         
 
     }
-    cout << "Class 1: " << class1_nearest << endl;
-    cout << "Class 2: " << class2_nearest << endl;
 
     if (class1_nearest < class2_nearest) 
         return 1;
@@ -38,23 +36,59 @@ int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &cla
 
 //Splitting my data into 80% training and 20% testing
 double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
-    int k = 5;
-    int training_size_class1 = class1.size() * 0.8;
-    int testing_size_class1 = class1.size() - training_size_class1;
+    double k = 5;
+    int fold_class1 = class1.size() / k;
+    int fold_class2 = class2.size() / k;
 
-    int training_size_class2 = class2.size() * 0.8;
-    int testing_size_class2 = class2.size() - training_size_class2;
-
-    int start = 0;
-    int end = training_size_class1;
     vector<vector<double>> training_class1;
+    vector<vector<double>> testing_class1;
+    vector<vector<double>> training_class2;
+    vector<vector<double>> testing_class2;
+
+    double accuracies = 0;
 
     for (int i = 0; i < k; i++) {
-        for (int j = 0; j < training_size_class1; j++) {
-            training_class1[(j + start) % class1.size()] = class1[(j + start) % class1.size()];
+        int start1 = i * fold_class1;
+        int end1 = start1 + fold_class1;
+        
+        int start2 = i * fold_class2;
+        int end2 = start2 + fold_class2;
+
+        for (int j = 0; j < class1.size(); j++) {
+            if (j >= start1 && j < end1) 
+                testing_class1.push_back(class1[j]);
+            else    
+                training_class1.push_back(class1[j]);
         }
-        start += testing_size_class1;
+
+         for (int j = 0; j < class2.size(); j++) {
+            if (j >= start2 && j < end2) 
+                testing_class2.push_back(class2[j]);
+            else    
+                training_class2.push_back(class2[j]);
+
+        }
+
+        double correct_prediction = 0;
+        for (int j = 0; j < testing_class1.size(); j++) {
+            int predicts = nearest_neighbor(training_class1, training_class2, testing_class1[j]);
+            if (predicts == 1) {
+                correct_prediction++;
+            }
+        } 
+        for (int j = 0; j < testing_class2.size(); j++) {
+            int predicts = nearest_neighbor(training_class1, training_class2, testing_class2[j]);
+            if (predicts == 2) {
+                correct_prediction++;
+            }
+        } 
+        accuracies += correct_prediction / (testing_class1.size() + testing_class2.size());
+        training_class1.clear();
+        testing_class1.clear();
+        training_class2.clear();
+        testing_class2.clear();
     }
+    return (accuracies / k) * 100;
 }
 
 int main() {
@@ -82,6 +116,6 @@ int main() {
             class2.push_back(features);
     }
 
-    vector<double> input;
+    cout << "Cross Validation: " << cross_validation(class1, class2) << endl;
 
 }
