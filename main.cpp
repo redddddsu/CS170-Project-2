@@ -59,13 +59,11 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
             else    
                 training_class1.push_back(class1[j]);
         }
-
          for (int j = 0; j < class2.size(); j++) {
             if (j >= start2 && j < end2) 
                 testing_class2.push_back(class2[j]);
             else    
                 training_class2.push_back(class2[j]);
-
         }
 
         double correct_prediction = 0;
@@ -90,13 +88,45 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
     return (accuracies / k) * 100;
 }
 
+//This function reduces the class feature so it will only have the selective features
+vector<vector<double>> reduce_feature(vector<vector<double>> &cls, vector<int> &features) {
+    vector<vector<double>> reduce_class(cls.size(), vector<double>(features.size()));
+
+    for (int i = 0; i < cls.size(); i++) {
+        for (int j = 0; j < features.size(); j++) {
+            reduce_class[i][j] = cls[i][features[j]];
+        }
+    }
+    return reduce_class;
+}
 void forward_elimation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
     vector<double> accuracies;
-    vector<vector<double>> nodes;
+    int max_accuracy_feature;
+    double max_accuarcy;
+    vector<int> features;
+    vector<int> best_features;
+    vector<bool> visited(class1[0].size(), false);
 
-    for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 12; j++) {
+    for (int i = 0; i < class1[0].size(); i++) {
+        max_accuarcy = -1;
+
+        for (int j = 0; j < class1[0].size(); j++) {
+            if (visited[j])
+                continue;
+            
+            features = best_features;
+            features.push_back(j);
+            vector<vector<double>> reduced_class1 = reduce_feature(class1, features);
+            vector<vector<double>> reduced_class2 = reduce_feature(class2, features);
+    
+            double accuarcy = cross_validation(reduced_class1, reduced_class2);
+            if (max_accuarcy < accuarcy) {
+                max_accuarcy = accuarcy;
+                max_accuracy_feature = j;
+            }
         }
+        visited[max_accuracy_feature] = true;
+        best_features.push_back(max_accuracy_feature);
     }
 }
 
