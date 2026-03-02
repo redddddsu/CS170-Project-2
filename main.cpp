@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -99,16 +100,16 @@ vector<vector<double>> reduce_feature(vector<vector<double>> &cls, vector<int> &
     }
     return reduce_class;
 }
-void forward_elimation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
+void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &class2) {
     vector<double> accuracies;
-    int max_accuracy_feature;
-    double max_accuarcy;
+    int highest_accuracy_feature;
+    double highest_accuracy;
     vector<int> features;
     vector<int> best_features;
     vector<bool> visited(class1[0].size(), false);
 
     for (int i = 0; i < class1[0].size(); i++) {
-        max_accuarcy = -1;
+        highest_accuracy = -1;
 
         for (int j = 0; j < class1[0].size(); j++) {
             if (visited[j])
@@ -119,16 +120,47 @@ void forward_elimation(vector<vector<double>> &class1, vector<vector<double>> &c
             vector<vector<double>> reduced_class1 = reduce_feature(class1, features);
             vector<vector<double>> reduced_class2 = reduce_feature(class2, features);
     
-            double accuarcy = cross_validation(reduced_class1, reduced_class2);
-            if (max_accuarcy < accuarcy) {
-                max_accuarcy = accuarcy;
-                max_accuracy_feature = j;
+            double accuracy = cross_validation(reduced_class1, reduced_class2);
+            if (highest_accuracy < accuracy) {
+                highest_accuracy = accuracy;
+                highest_accuracy_feature = j;
             }
         }
-        visited[max_accuracy_feature] = true;
-        best_features.push_back(max_accuracy_feature);
+        visited[highest_accuracy_feature] = true;
+        best_features.push_back(highest_accuracy_feature);
     }
 }
+
+void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
+    vector<int> best_features;
+    vector<int> features;
+    int highest_accuracy_feature;
+    double highest_accuracy;
+
+    for (int i = 0; i < class1[0].size(); i++) {
+        best_features.push_back(i);
+    }
+
+    for (int i = 1; i < class1[0].size(); i++) {
+        highest_accuracy = -1;
+
+        for (int j = 0; j < class1[0].size(); j++) {
+            features = best_features;
+            features.erase(features.begin() + j);
+
+            vector<vector<double>> reduced_class1 = reduce_feature(class1, features);
+            vector<vector<double>> reduced_class2 = reduce_feature(class2, features);
+
+            double accuracy = cross_validation(reduced_class1, reduced_class2);
+            if (highest_accuracy < accuracy) {
+                highest_accuracy = accuracy;
+                highest_accuracy_feature = j;
+            }
+        }
+        best_features.erase(best_features.begin() + highest_accuracy_feature);
+    }
+}
+
 
 int main() {
     ifstream file("SanityCheck_DataSet__1.txt");
