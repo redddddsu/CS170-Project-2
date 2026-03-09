@@ -184,7 +184,7 @@ int main() {
     ifstream file("Small_dataset/CS170_Small_DataSet__20.txt");
     string s;
 
-    int classes;
+    double classes;
     double values;
 
     vector<vector<double>> class1;
@@ -196,8 +196,7 @@ int main() {
 
         vector<double> features;
         while (ss >> values) {
-            if (values != 0)
-                features.push_back(values);
+            features.push_back(values);
         }
 
         if (classes == 1) 
@@ -208,8 +207,6 @@ int main() {
     }
 
     forward_selection(class1, class2);
-    // for (int i = 0; i < class2[0].size(); i++) {
-    //     cout << class2[0][i] << endl;
-    // }
+
 
 }
