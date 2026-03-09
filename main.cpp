@@ -128,6 +128,15 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
         }
         visited[highest_accuracy_feature] = true;
         best_features.push_back(highest_accuracy_feature);
+
+        cout << "Feature: " << i + 1 << endl;
+        cout << "Accuracy: " << highest_accuracy << endl;
+        cout << "Selected Features: {";
+        for (int j = 0; j < best_features.size(); j++) {
+            cout << best_features[j];
+            if (j != best_features.size() - 1) cout << ", ";
+        }
+        cout << "}" << endl << endl;
     }
 }
 
@@ -158,12 +167,21 @@ void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &
             }
         }
         best_features.erase(best_features.begin() + highest_accuracy_feature);
+
+        cout << "Feature: " << i + 1 << endl;
+        cout << "Accuracy: " << highest_accuracy << endl;
+        cout << "Selected Features: {";
+        for (int j = 0; j < best_features.size(); j++) {
+            cout << best_features[j];
+            if (j != best_features.size() - 1) cout << ", ";
+        }
+        cout << "}" << endl << endl;
     }
 }
 
 
 int main() {
-    ifstream file("SanityCheck_DataSet__1.txt");
+    ifstream file("Small_dataset/CS170_Small_DataSet__20.txt");
     string s;
 
     int classes;
@@ -178,15 +196,20 @@ int main() {
 
         vector<double> features;
         while (ss >> values) {
-            features.push_back(values);
+            if (values != 0)
+                features.push_back(values);
         }
 
         if (classes == 1) 
             class1.push_back(features);
         else    
             class2.push_back(features);
+        
     }
 
-    cout << "Cross Validation: " << cross_validation(class1, class2) << endl;
+    forward_selection(class1, class2);
+    // for (int i = 0; i < class2[0].size(); i++) {
+    //     cout << class2[0][i] << endl;
+    // }
 
 }
