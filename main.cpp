@@ -6,8 +6,11 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <chrono>
+
 
 using namespace std;
+using namespace std::chrono;
 
 double euclidean_distance(vector<double> &classes, vector<double> &input) {
     double distance = 0;
@@ -106,6 +109,11 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
     double highest_accuracy;
     vector<int> features;
     vector<int> best_features;
+    auto start = high_resolution_clock::now();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << "Time : " << duration.count() << endl;
+
     vector<bool> visited(class1[0].size(), false);
 
     for (int i = 0; i < class1[0].size(); i++) {
@@ -136,7 +144,12 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
             cout << best_features[j];
             if (j != best_features.size() - 1) cout << ", ";
         }
-        cout << "}" << endl << endl;
+        cout << "}" << endl;
+        auto stop = high_resolution_clock::now();
+        duration = duration_cast<microseconds>(stop - start);
+        cout << "Time in seconds: " << std::chrono::duration<double>(duration).count() << endl << endl;
+
+        if (i + 1 == 10) break;
     }
 }
 
@@ -168,7 +181,7 @@ void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &
         }
         best_features.erase(best_features.begin() + highest_accuracy_feature);
 
-        cout << "Feature: " << i + 1 << endl;
+        cout << "Feature: " << i << endl;
         cout << "Accuracy: " << highest_accuracy << endl;
         cout << "Selected Features: {";
         for (int j = 0; j < best_features.size(); j++) {
@@ -180,8 +193,28 @@ void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &
 }
 
 
+// Small_dataset/CS170_Small_DataSet__20.txt
+// Large_dataset/CS170_Large_DataSet__20.txt
 int main() {
-    ifstream file("Small_dataset/CS170_Small_DataSet__20.txt");
+    int size;
+    string data_set_id;
+    cout << "Enter 1 for small dataset or 2 for large dataset" << endl;
+    cin >> size;
+    cout << "Enter which dataset (1-120)" << endl;
+    cout << "Note: The one used in the report is 20" << endl;
+    cin >> data_set_id;
+
+    string fileName;
+    if (size == 1) 
+        fileName = "Small_dataset/CS170_Small_DataSet__"; 
+    else
+        fileName = "Large_dataset/CS170_Large_DataSet__";
+    fileName += data_set_id + ".txt";
+
+
+
+
+    ifstream file(fileName);
     string s;
 
     double classes;
@@ -205,8 +238,6 @@ int main() {
             class2.push_back(features);
         
     }
-
     forward_selection(class1, class2);
-
 
 }
