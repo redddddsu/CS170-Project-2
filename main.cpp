@@ -148,8 +148,6 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
         auto stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(stop - start);
         cout << "Time in seconds: " << std::chrono::duration<double>(duration).count() << endl << endl;
-
-        if (i + 1 == 10) break;
     }
 }
 
