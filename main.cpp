@@ -40,7 +40,7 @@ int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &cla
     return 2;
 }
 
-//splitting my data into 80% training and 20% testing or k = 5
+// splitting the data into 80% training and 20% testing or k = 5
 double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
     double k = 5;
 
