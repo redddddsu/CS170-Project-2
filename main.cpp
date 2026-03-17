@@ -40,9 +40,9 @@ int nearest_neighbor(vector<vector<double>> &class1, vector<vector<double>> &cla
     return 2;
 }
 
-// splitting the data into 80% training and 20% testing or k = 5
+// splitting the data into around 75% training and 25% testing or k = 4
 double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &class2) {
-    double k = 5;
+    double k = 4;
 
     int fold_class1 = class1.size() / k;
     int fold_class2 = class2.size() / k;
@@ -55,8 +55,8 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
     double accuracies = 0;
 
     /*
-    testing set takes up 20% of the dataset
-    so we split the dataset into 5 sections
+    testing set takes up 25% of the dataset
+    so we split the dataset into 4 sections
     each iteration will use a different section of the dataset as the testing set
     */ 
     for (int i = 0; i < k; i++) {
@@ -67,6 +67,7 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
         int start2 = i * fold_class2;
         int end2 = start2 + fold_class2;
 
+        // set the 25% as testing and everything else as training
         for (int j = 0; j < class1.size(); j++) {
             if (j >= start1 && j < end1) 
                 testing_class1.push_back(class1[j]);
@@ -104,8 +105,7 @@ double cross_validation(vector<vector<double>> &class1, vector<vector<double>> &
 }
 
 /* 
-this function reduces the class feature so it will only have the selective features
-also converts a vector to a 2D vector to use cross_valdiation and NN functions
+this function reduces all class feature so it will only have the selective features
 */
 vector<vector<double>> reduce_feature(vector<vector<double>> &cls, vector<int> &features) {
     vector<vector<double>> reduce_class(cls.size(), vector<double>(features.size()));
@@ -161,11 +161,11 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
             overall_best_set = best_features;
         }
 
-        cout << "Feature: " << i + 1 << endl;
+        cout << "Iteration: " << i + 1 << endl;
         cout << "Accuracy: " << highest_accuracy << "%" << endl;
         cout << "Selected Features: {";
         for (int j = 0; j < best_features.size(); j++) {
-            cout << best_features[j];
+            cout << best_features[j] + 1;
             if (j != best_features.size() - 1) cout << ", ";
         }
         cout << "}" << endl;
@@ -174,10 +174,10 @@ void forward_selection(vector<vector<double>> &class1, vector<vector<double>> &c
         cout << "Time in seconds: " << std::chrono::duration<double>(duration).count() << endl << endl;
     }
 
-    cout << "The best accuarcy is: " << overall_best_accuracy << "%" << endl;
+    cout << "The best accuracy is: " << overall_best_accuracy << "%" << endl;
     cout << "These are the best features: ";
     for (int i = 0; i < overall_best_set.size(); i++) {
-            cout << overall_best_set[i];
+            cout << overall_best_set[i] + 1;
             if (i != overall_best_set.size() - 1) cout << ", ";
         }
 }
@@ -219,7 +219,7 @@ void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &
         // remove the feature from the set
         best_features.erase(best_features.begin() + highest_accuracy_feature);
 
-        cout << "Feature Removed: " << i << endl;
+        cout << "Iteration: " << i << endl;
         cout << "Accuracy: " << highest_accuracy << "%" << endl;
         cout << "Selected Features: {";
         for (int j = 0; j < best_features.size(); j++) {
@@ -237,10 +237,10 @@ void backward_elimation(vector<vector<double>> &class1, vector<vector<double>> &
         duration = duration_cast<microseconds>(stop - start);
         cout << "Time in seconds: " << std::chrono::duration<double>(duration).count() << endl << endl;
     }
-    cout << "The best accuarcy is: " << overall_best_accuracy << "%" << endl;
+    cout << "The best accuracy is: " << overall_best_accuracy << "%" << endl;
     cout << "These are the best features: ";
     for (int i = 0; i < overall_best_set.size(); i++) {
-            cout << overall_best_set[i];
+            cout << overall_best_set[i] + 1;
             if (i != overall_best_set.size() - 1) cout << ", ";
     }
 }
@@ -253,7 +253,7 @@ int main() {
     cin >> size;
     cout << endl;
     cout << "Enter which dataset (1-120)" << endl;
-    cout << "Note: The one used in the report is 20" << endl;
+    cout << "Note: I am assigned 77 for small data and 95 for large data" << endl;
     cin >> data_set_id;
     cout << endl;
     cout << "Enter 1 for forward selection or 2 for backward elimination" << endl;
